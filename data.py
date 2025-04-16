@@ -6,25 +6,28 @@ from sqlalchemy import create_engine, text
 
 QUERY_FLIGHT_BY_ID = """
 SELECT 
-    flights.*,
-    airlines.airline,
-    flights.ID as FLIGHT_ID, 
+    flights.ID as ID, 
+    airlines.airline AS AIRLINE,
+    flights.ORIGIN_AIRPORT AS ORIGIN_AIRPORT,
+	flights.DESTINATION_AIRPORT AS DESTINATION_AIRPORT,
     flights.DEPARTURE_DELAY as DELAY
 FROM flights
 JOIN airlines
 ON flights.airline = airlines.id
 WHERE flights.ID = :id
+ORDER BY ORIGIN_AIRPORT, DELAY DESC
 ;
 """
 
 QUERY_FLIGHT_BY_DATE = """
 SELECT
-	ID,
-	AIRLINE,
-	ORIGIN_AIRPORT,
-	DESTINATION_AIRPORT,
-	DEPARTURE_DELAY AS DELAY
+	flights.ID AS ID,
+	airlines.AIRLINE AS AIRLINE,
+	flights.ORIGIN_AIRPORT AS ORIGIN_AIRPORT,
+	flights.DESTINATION_AIRPORT AS DESTINATION_AIRPORT,
+	flights.DEPARTURE_DELAY AS DELAY
 FROM flights
+JOIN airlines
 WHERE
 	DAY = :day
 	AND MONTH = :month
@@ -43,8 +46,9 @@ SELECT
 FROM flights
 JOIN airlines
 ON flights.AIRLINE = airlines.ID
-WHERE DEPARTURE_DELAY > 0
+WHERE DEPARTURE_DELAY > 20
     AND airlines.AIRLINE = :airline
+ORDER BY DELAY DESC
 ;
 """
 
@@ -58,8 +62,9 @@ SELECT
 FROM flights
 JOIN airlines
 ON flights.AIRLINE = airlines.ID
-WHERE DEPARTURE_DELAY > 0
+WHERE DEPARTURE_DELAY > 20
     AND flights.ORIGIN_AIRPORT = :airport
+ORDER BY DELAY DESC
 ;
 """
 
