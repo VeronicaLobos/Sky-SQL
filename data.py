@@ -1,8 +1,13 @@
-from sqlalchemy import create_engine, text
+"""
+FlightData class
+This class is a Data Access Layer (DAL) object that provides an
+interface to the flight data in the SQLITE database.
 
-## In order to print the returned results,
-## each query must contain the following columns:
-## FLIGHT_ID, ORIGIN_AIRPORT, DESTINATION_AIRPORT, AIRLINE, and DELAY
+In order to print the returned results in main.py,
+each query must contain the following columns:
+FLIGHT_ID, ORIGIN_AIRPORT, DESTINATION_AIRPORT, AIRLINE, and DELAY
+"""
+from sqlalchemy import create_engine, text
 
 QUERY_FLIGHT_BY_ID = """
 SELECT 

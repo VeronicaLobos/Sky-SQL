@@ -1,3 +1,19 @@
+"""
+Flight Data printer
+This module contains the main function to run the program.
+It provides a menu to the user to select different queries
+and prints the results of those queries.
+
+1. Show flight by ID
+2. Show flights by date
+3. Delayed flights by airline
+4. Delayed flights by origin airport
+
+* Only delays over 20 minutes are considered
+for the delayed flights queries.
+* Negative delays are not considered.
+"""
+
 import data
 from datetime import datetime
 import sqlalchemy
