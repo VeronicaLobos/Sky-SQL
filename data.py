@@ -9,6 +9,8 @@ FLIGHT_ID, ORIGIN_AIRPORT, DESTINATION_AIRPORT, AIRLINE, and DELAY
 """
 from sqlalchemy import create_engine, text
 
+DELAY_THRESHOLD = 20
+
 QUERY_FLIGHT_BY_ID = """
 SELECT 
     flights.ID as ID, 
@@ -51,7 +53,7 @@ SELECT
 FROM flights
 JOIN airlines
 ON flights.AIRLINE = airlines.ID
-WHERE DEPARTURE_DELAY > 20
+WHERE DEPARTURE_DELAY >= :delay_threshold
     AND airlines.AIRLINE = :airline
 ORDER BY DELAY DESC
 ;
@@ -67,7 +69,7 @@ SELECT
 FROM flights
 JOIN airlines
 ON flights.AIRLINE = airlines.ID
-WHERE DEPARTURE_DELAY > 20
+WHERE DEPARTURE_DELAY >= :delay_threshold
     AND flights.ORIGIN_AIRPORT = :airport
 ORDER BY DELAY DESC
 ;
@@ -75,9 +77,10 @@ ORDER BY DELAY DESC
 
 class FlightData:
     """
-    The FlightData class is a Data Access Layer (DAL) object that provides an
-    interface to the flight data in the SQLITE database. When the object is created,
-    the class forms connection to the sqlite database file, which remains active
+    The FlightData class is a Data Access Layer (DAL) object
+    that provides an interface to the flight data in the SQLITE
+    database. When the object is created, the class forms
+    connection to the sqlite database file, which remains active
     until the object is destroyed.
     """
 
@@ -89,9 +92,11 @@ class FlightData:
 
     def _execute_query(self, query, params):
         """
-        Execute an SQL query with the params provided in a dictionary,
-        and returns a list of records (dictionary-like objects).
-        If an exception was raised, print the error, and return an empty list.
+        Execute an SQL query with the params provided in a
+        dictionary, and returns a list of records (dictionary-like
+        objects).
+        If an exception was raised, print the error, and return an
+        empty list.
         """
         ## Since the engine is already created,
         ## it just needs to connect to the database
@@ -105,15 +110,14 @@ class FlightData:
                 print(f"Error: {e}")
                 return []
 
-
     def get_flight_by_id(self, flight_id):
         """
         Searches for flight details using flight ID.
-        If the flight was found, returns a list with a single record.
+        If the flight was found, returns a list with a single
+        record.
         """
         params = {'id': flight_id}
         return self._execute_query(QUERY_FLIGHT_BY_ID, params)
-
 
     def get_flights_by_date(self, day, month, year):
         """
@@ -123,27 +127,27 @@ class FlightData:
         params = {'day': day, 'month': month, 'year': year}
         return self._execute_query(QUERY_FLIGHT_BY_DATE, params)
 
-
     def get_delayed_flights_by_airline(self, airline):
         """
         Searches for delayed flights using the given airline.
         If the flight was found, returns a list with the records.
         """
-        params = {'airline': airline}
-        return self._execute_query(QUERY_DELAYED_FLIGHT_BY_AIRLINE, params)
-
+        params = {'airline': airline, 'delay_threshold': DELAY_THRESHOLD}
+        return self._execute_query(QUERY_DELAYED_FLIGHT_BY_AIRLINE,
+                                   params)
 
     def get_delayed_flights_by_airport(self, airport):
         """
         Searches for delayed flights using the given airport.
         If the flight was found, returns a list with the records.
         """
-        params = {'airport': airport}
-        return self._execute_query(QUERY_DELAYED_FLIGHT_BY_ORIGIN_AIRPORT, params)
-
+        params = {'airport': airport, 'delay_threshold': DELAY_THRESHOLD}
+        return self._execute_query(QUERY_DELAYED_FLIGHT_BY_ORIGIN_AIRPORT,
+                                   params)
 
     def __del__(self):
         """
-        Closes the connection to the databse when the object is about to be destroyed
+        Closes the connection to the database when the object
+        is about to be destroyed.
         """
         self._engine.dispose()
